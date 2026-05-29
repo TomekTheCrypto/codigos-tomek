@@ -2,3 +2,384 @@
 20250200|017-0000000040-20250200-0001|M00040-001|24/02/2025||05|3|0|221183552|221183552|6|203418413xx|PEPITO SA|836.04|150.49|0.00|0.00|0.00|0.00|137.52|0.00|0.00|0.00|1124.05|USD|3.683|01/01/0001|00|-||-|01/01/0001||||||||||1|
 20250200|017-0000000022-20250200-0001|M00022-001|21/01/2025||46|1662|0|7673000||6|201313129xx|SUPERINTENDENCIA NACIONAL DE ADUANAS Y DE ADMINISTRACION TRIBUTARIA - SUNAT|90722.22|16330.00|0.00|0.00|0.00|0.00|0.00|0.00|0.00|0.00|107052.22|PEN|3.742|01/01/0001|00|-||-|01/01/0001|||5|||||||6|
 20250200|001-0000000057-20250200-0001|M00057-001|30/09/2024||01|F002|0|0048685||6|205108440xx|AGROINDUSTRIA EL COMEDERO SOCIEDAD COMERCIAL DE RESPONSABILIDAD LIMITADA|810.93|145.97|0.00|0.00|0.00|0.00|0.00|0.00|0.00|0.00|956.90|PEN|3.722|01/01/0001|00|-||-|02/10/2024|000000246806066|||||||||6|
+
+// asegurar que exista columna Tipo de Operación
+if (!DT_PLE_Table.Columns.Contains("Tipo de Operación"))
+{
+    DT_PLE_Table.Columns.Add("Tipo de Operación", typeof(string));
+}
+
+// asegurar que exista columna Observacion
+if (!DT_PLE_Table.Columns.Contains("Observacion"))
+{
+    DT_PLE_Table.Columns.Add("Observacion", typeof(string));
+}
+
+// nombres de columnas esperadas
+string strExport = "Valor facturado de la exportación";
+string strExonerada = "Importe total de la operación exonerada";
+string strInafecta = "Importe total de la operación inafecta";
+string strIGV = "Impuesto General a las Ventas y/o Impuesto de Promoción Municipal";
+string strDescIGV = "Descuento del Impuesto General a las Ventas y/o Impuesto de Promoción Municipal";
+string strTipoOperacion = "Tipo de Operación";
+string strNombre = "Apellidos y nombres, denominación o razón social  del cliente. En caso de personas naturales se debe consignar los datos en el siguiente orden: Apellido paterno, apellido materno y nombre completo.";
+string strDoc = "Número de Documento de Identidad del cliente";
+string strObs = "Observacion";
+string strBaseGravada = "Base imponible de la operación gravada (4)";
+string strDescBase = "Descuento de la Base Imponible";
+string strISC = "Impuesto Selectivo al Consumo, de ser el caso.";
+string strBaseArroz = "Base imponible de la operación gravada con el Impuesto a las Ventas del Arroz Pilado";
+string strIGVArroz = "Impuesto a las Ventas del Arroz Pilado";
+string strImpBolsas = "Impuesto al Consumo de las Bolsas de Plástico.";
+string strOtros = "Otros conceptos, tributos y cargos que no forman parte de la base imponible";
+string strTotal = "Importe total del comprobante de pago";
+string strTipoComp = "Tipo de Comprobante de Pago o Documento";
+string strSerie = "Número serie del comprobante de pago o documento o número de serie de la maquina registradora";
+string strNumero = "Número del comprobante de pago o documento.";
+// string strCampoFinal = "1. Para efectos del registro de tickets o cintas emitidos por máquinas registradoras que no otorguen derecho a crédito fiscal de acuerdo a las normas de Comprobantes de Pago y opten por anotar el importe total de las operaciones realizadas por día y por máquina registradora, registrar el número final (2). 2. Se permite la consolidación diaria de las Boletas de Venta emitidas de manera electrónica";
+string strCampoFinal = "1.ParaefectosdelregistrodeticketsocintasemitidospormáquinasregistradorasquenootorguenderechoacréditofiscaldeacuerdoalasnormasdeComprobantesdePagoyoptenporanotarelimportetotaldelasoperacionesrealizadaspordíaypormáquinaregistradora,registrarelnúmerofinal(2).2.SepermitelaconsolidacióndiariadelasBoletasdeVentaemitidasdemaneraelectrónica";
+string strTipoMod = "Tipo del comprobante de pago que se modifica (6)";
+string strSerieMod = "Número de serie del comprobante de pago que se modifica (6) o Código de la Dependencia Aduanera";
+string strNumeroMod = "Número del comprobante de pago que se modifica (6) o Número de la DUA, de corresponder";
+
+// indices de columnas
+int idxExport = DT_PLE_Table.Columns.IndexOf(strExport);
+int idxExonerada = DT_PLE_Table.Columns.IndexOf(strExonerada);
+int idxInafecta = DT_PLE_Table.Columns.IndexOf(strInafecta);
+int idxIGV = DT_PLE_Table.Columns.IndexOf(strIGV);
+int idxDescIGV = DT_PLE_Table.Columns.IndexOf(strDescIGV);
+int idxTipoOperacion = DT_PLE_Table.Columns.IndexOf(strTipoOperacion);
+int idxNombre = DT_PLE_Table.Columns.IndexOf(strNombre);
+int idxDoc = DT_PLE_Table.Columns.IndexOf(strDoc);
+int idxObs = DT_PLE_Table.Columns.IndexOf(strObs);
+int idxBaseGravada = DT_PLE_Table.Columns.IndexOf(strBaseGravada);
+int idxDescBase = DT_PLE_Table.Columns.IndexOf(strDescBase);
+int idxISC = DT_PLE_Table.Columns.IndexOf(strISC);
+int idxBaseArroz = DT_PLE_Table.Columns.IndexOf(strBaseArroz);
+int idxIGVArroz = DT_PLE_Table.Columns.IndexOf(strIGVArroz);
+int idxImpBolsas = DT_PLE_Table.Columns.IndexOf(strImpBolsas);
+int idxOtros = DT_PLE_Table.Columns.IndexOf(strOtros);
+int idxTotal = DT_PLE_Table.Columns.IndexOf(strTotal);
+int idxTipoComp = DT_PLE_Table.Columns.IndexOf(strTipoComp);
+int idxSerie = DT_PLE_Table.Columns.IndexOf(strSerie);
+int idxNumero = DT_PLE_Table.Columns.IndexOf(strNumero);
+// int idxCampoFinal = DT_PLE_Table.Columns.IndexOf(strCampoFinal);
+int idxTipoMod = DT_PLE_Table.Columns.IndexOf(strTipoMod);
+int idxSerieMod = DT_PLE_Table.Columns.IndexOf(strSerieMod);
+int idxNumeroMod = DT_PLE_Table.Columns.IndexOf(strNumeroMod);
+
+
+// Limpiando campo Final
+int idxCampoFinal = -1;
+
+foreach (System.Data.DataColumn col in DT_PLE_Table.Columns)
+{
+    string cleanName = col.ColumnName
+.Replace("\r", "")
+.Replace("\n", "")
+.Replace(" ", "");
+
+    if (cleanName.Contains(strCampoFinal))
+{
+        idxCampoFinal = col.Ordinal;
+        break;
+}
+}
+
+// validacion si existen las columnas
+var missingColumns = new System.Collections.Generic.List<string>();
+
+if (idxExport == -1)
+    missingColumns.Add(strExport);
+
+if (idxExonerada == -1)
+    missingColumns.Add(strExonerada);
+
+if (idxInafecta == -1)
+    missingColumns.Add(strInafecta);
+
+if (idxIGV == -1)
+    missingColumns.Add(strIGV);
+
+if (idxDescIGV == -1)
+    missingColumns.Add(strDescIGV);
+
+if (idxTipoOperacion == -1)
+    missingColumns.Add(strTipoOperacion);
+
+if (idxNombre == -1)
+    missingColumns.Add(strNombre);
+
+if (idxDoc == -1)
+    missingColumns.Add(strDoc);
+
+if (idxObs == -1)
+    missingColumns.Add(strObs);
+
+if (idxBaseGravada == -1)
+    missingColumns.Add(strBaseGravada);
+
+if (idxDescBase == -1)
+    missingColumns.Add(strDescBase);
+
+if (idxISC == -1)
+    missingColumns.Add(strISC);
+
+if (idxBaseArroz == -1)
+    missingColumns.Add(strBaseArroz);
+
+if (idxIGVArroz == -1)
+    missingColumns.Add(strIGVArroz);
+
+if (idxImpBolsas == -1)
+    missingColumns.Add(strImpBolsas);
+
+if (idxOtros == -1)
+    missingColumns.Add(strOtros);
+
+if (idxTotal == -1)
+    missingColumns.Add(strTotal);
+
+if (idxTipoComp == -1)
+    missingColumns.Add(strTipoComp);
+
+if (idxSerie == -1)
+    missingColumns.Add(strSerie);
+
+if (idxNumero == -1)
+    missingColumns.Add(strNumero);
+
+if (idxCampoFinal == -1)
+    missingColumns.Add(strCampoFinal);
+
+if (idxTipoMod == -1)
+    missingColumns.Add(strTipoMod);
+
+if (idxSerieMod == -1)
+    missingColumns.Add(strSerieMod);
+
+if (idxNumeroMod == -1)
+    missingColumns.Add(strNumeroMod);
+
+// Si hay columnas faltantes → lanzar error
+if (missingColumns.Count > 0)
+{
+    string errorMessage = "Faltan las siguientes columnas:\n- " + string.Join("\n- ", missingColumns);
+throw new Exception(errorMessage);
+}
+
+// funcion segura
+Func<object, decimal> SafeRead = (obj) =>
+{
+    if (obj == null) return 0m;
+
+    decimal temp = 0m;
+    decimal.TryParse(obj.ToString().Replace(",", "."), out temp);
+    return temp;
+};
+
+// Creacion de diccionarios para validaciones 02, 03 y 05
+var dictClientes = new Dictionary<string, HashSet<string>>();
+var dictDocs = new Dictionary<string, HashSet<string>>();
+var dictFacturas = new Dictionary<string, decimal>();
+var dictNotas = new Dictionary<string, decimal>();
+
+// Llenado de diccionarios para validaciones 02, 03 y 05
+foreach (System.Data.DataRow row in DT_PLE_Table.Rows)
+{
+    string nombre = "";
+    string doc = "";
+    string tipo = row[idxTipoComp] == DBNull.Value ? "" : row[idxTipoComp].ToString().Trim();
+    decimal total = SafeRead(row[idxTotal]);
+
+    // Captura nombre
+    if (row[idxNombre] != null)
+{
+        nombre = row[idxNombre].ToString().Trim().ToUpper();
+}
+
+    // Captura documento de identidad
+    if (row[idxDoc] != null)
+{
+        doc = row[idxDoc].ToString().Trim();
+}
+
+    if (!dictClientes.ContainsKey(nombre))
+{
+        dictClientes[nombre] = new HashSet<string>();
+}
+
+    if (!dictDocs.ContainsKey(doc))
+{
+        dictDocs[doc] = new HashSet<string>();
+}
+
+    dictClientes[nombre].Add(doc);
+    dictDocs[doc].Add(nombre);
+
+    // Facturas
+    if (tipo == "1")
+{
+        string key =
+(row[idxTipoComp] == DBNull.Value ? "" : row[idxTipoComp].ToString().Trim()) +
+(row[idxSerie] == DBNull.Value ? "" : row[idxSerie].ToString().Trim()) +
+(row[idxNumero] == DBNull.Value ? "" : row[idxNumero].ToString().Trim()) +
+(row[idxCampoFinal] == DBNull.Value ? "" : row[idxCampoFinal].ToString().Trim());
+
+        if (!dictFacturas.ContainsKey(key))
+            dictFacturas[key] = 0;
+
+        dictFacturas[key] += total;
+}
+
+    // NC (Nota de credito) / ND (Nota de debito)
+    if (tipo == "7" || tipo == "8")
+{
+        string key =
+(row[idxTipoMod] == DBNull.Value ? "" : row[idxTipoMod].ToString().Trim()) +
+(row[idxSerieMod] == DBNull.Value ? "" : row[idxSerieMod].ToString().Trim()) +
+(row[idxNumeroMod] == DBNull.Value ? "" : row[idxNumeroMod].ToString().Trim());
+
+        if (!dictNotas.ContainsKey(key))
+            dictNotas[key] = 0;
+
+        dictNotas[key] += total;
+}
+}
+
+foreach (System.Data.DataRow row in DT_PLE_Table.Rows)
+{
+    decimal valExport = SafeRead(row[idxExport]);
+    decimal valExonerada = SafeRead(row[idxExonerada]);
+    decimal valInafecta = SafeRead(row[idxInafecta]);
+    decimal valIGV = SafeRead(row[idxIGV]);
+    decimal valDescIGV = SafeRead(row[idxDescIGV]);
+    decimal baseGravada = SafeRead(row[idxBaseGravada]);
+    decimal descBase = SafeRead(row[idxDescBase]);
+    decimal isc = SafeRead(row[idxISC]);
+    decimal baseArroz = SafeRead(row[idxBaseArroz]);
+    decimal igvArroz = SafeRead(row[idxIGVArroz]);
+    decimal impBolsas = SafeRead(row[idxImpBolsas]);
+    decimal otros = SafeRead(row[idxOtros]);
+    decimal totalComprobante = SafeRead(row[idxTotal]);
+
+    string tipoOperacion = "";
+    string nombre = row[idxNombre] == DBNull.Value ? "" : row[idxNombre].ToString().Trim().ToUpper();
+    string tipo = row[idxTipoComp] == DBNull.Value ? "" : row[idxTipoComp].ToString().Trim();
+    string doc = row[idxDoc] == DBNull.Value ? "" : row[idxDoc].ToString().Trim();
+    string obs = row[idxObs] == DBNull.Value ? "" : row[idxObs].ToString();
+
+    // ------------------------
+    // VALIDACION 01: Tipo de Operación
+    // ------------------------
+    if (valExport > 0)
+{
+        tipoOperacion = "Exportación";
+}
+    else if ((valInafecta > 0 || valExonerada > 0) && valIGV == 0 && valDescIGV == 0)
+{
+        tipoOperacion = "Posible Exportación";
+}
+    else if (valIGV > 0 || valDescIGV > 0)
+{
+        tipoOperacion = "Operaciones Gravadas";
+}
+    else
+{
+        tipoOperacion = "Operaciones Anuladas";
+}
+
+    // ------------------------
+    // VALIDACION 02: Nombre → múltiples documentos
+    // ------------------------
+    if (!string.IsNullOrEmpty(nombre) 
+&& dictClientes.ContainsKey(nombre) 
+&& dictClientes[nombre].Count > 1)
+{
+        string nuevaObs = "El huésped presenta varios registros con distintos documentos de identidad.";
+
+        if (string.IsNullOrEmpty(obs))
+            obs = nuevaObs;
+        else if (!obs.Contains(nuevaObs))
+            obs = obs + " " + nuevaObs;
+}
+
+    // ------------------------
+    // VALIDACION 03: Documento → múltiples nombres
+    // ------------------------
+    if (!string.IsNullOrEmpty(doc) 
+&& dictDocs.ContainsKey(doc) 
+&& dictDocs[doc].Count > 1)
+{
+        string nuevaObs = "El documento de identidad está asociado a huéspedes diferentes.";
+
+        if (string.IsNullOrEmpty(obs))
+            obs = nuevaObs;
+        else if (!obs.Contains(nuevaObs))
+            obs = obs + " " + nuevaObs;
+}
+
+    // ------------------------
+    // VALIDACION 04: Compara Suma de Importes con Importe Total
+    // ------------------------
+    decimal sumaImportes = valExport + baseGravada + descBase + valIGV + valDescIGV + valExonerada + valInafecta + isc + baseArroz + igvArroz + impBolsas + otros;
+    if (Math.Abs(sumaImportes - totalComprobante) > 0.01m) // Considerando un margen de error de 0.01
+{
+        string nuevaObs = "La suma de los importes no coincide con el importe total del comprobante.";
+
+        if (string.IsNullOrEmpty(obs))
+            obs = nuevaObs;
+        else if (!obs.Contains(nuevaObs))
+            obs = obs + " " + nuevaObs;
+
+}
+
+    // ------------------------
+    // VALIDACION 05:
+    // ------------------------
+    if (tipo == "7" || tipo == "8" || tipo == "1")
+{
+        string keyRef = "";
+
+        if (tipo == "1")
+{
+            keyRef =
+(row[idxTipoComp] == DBNull.Value ? "" : row[idxTipoComp].ToString().Trim()) +
+(row[idxSerie] == DBNull.Value ? "" : row[idxSerie].ToString().Trim()) +
+(row[idxNumero] == DBNull.Value ? "" : row[idxNumero].ToString().Trim()) +
+(row[idxCampoFinal] == DBNull.Value ? "" : row[idxCampoFinal].ToString().Trim());
+}
+        else
+{
+            keyRef =
+(row[idxTipoMod] == DBNull.Value ? "" : row[idxTipoMod].ToString().Trim()) +
+(row[idxSerieMod] == DBNull.Value ? "" : row[idxSerieMod].ToString().Trim()) +
+(row[idxNumeroMod] == DBNull.Value ? "" : row[idxNumeroMod].ToString().Trim());
+}
+
+        if (dictFacturas.ContainsKey(keyRef) && dictNotas.ContainsKey(keyRef))
+{
+            decimal sumaTotal = dictFacturas[keyRef] + dictNotas[keyRef];
+
+            if (sumaTotal <= 0)
+{
+                string nuevaObs = "Dos notas de crédito o más anulan el importe total de un mismo comprobante.";
+
+                if (string.IsNullOrEmpty(obs))
+                    obs = nuevaObs;
+                else if (!obs.Contains(nuevaObs))
+                    obs = obs + " " + nuevaObs;
+}
+}
+}
+
+    // Si no hay observaciones, asignar mensaje de validación
+    if (string.IsNullOrWhiteSpace(obs))
+        obs = "OK";
+
+    // ------------------------
+    // GUARDAR RESULTADOS
+    // ------------------------
+    row[idxTipoOperacion] = tipoOperacion;
+    row[idxObs] = obs;
+}
